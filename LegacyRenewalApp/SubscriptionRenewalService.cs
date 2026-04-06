@@ -9,6 +9,7 @@ namespace LegacyRenewalApp
         IDataValidator dataValidator;
        IDiscountService discountService;
         ILoyaltyPoints loyaltyPointsService;
+        IMinimalTotalPolicy minimalTotalPolicy;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
@@ -16,6 +17,7 @@ namespace LegacyRenewalApp
             dataValidator = new DataValidator();
             loyaltyPointsService = new LoyaltyPointsService();
             discountService = new DiscountService(new LoyaltyDiscountDictionary(),new TeamDiscountDictionary()); 
+            minimalTotalPolicy = new MinimalTotalPolicy();
         }
         
 
@@ -55,11 +57,9 @@ namespace LegacyRenewalApp
             }
 
             decimal subtotalAfterDiscount = baseAmount - discountAmount;
-            if (subtotalAfterDiscount < 300m)
-            {
-                subtotalAfterDiscount = 300m;
-                notes += "minimum discounted subtotal applied; ";
-            }
+            var applyMinimalSubtotal = minimalTotalPolicy.MinimalTotal(subtotalAfterDiscount);
+            subtotalAfterDiscount = applyMinimalSubtotal.subTotal;
+            notes += applyMinimalSubtotal.note;
 
             decimal supportFee = 0m;
             if (includePremiumSupport)
