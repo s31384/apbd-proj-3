@@ -12,10 +12,7 @@ public class LoyaltyDiscountDictionary : ILoyaltyDiscountDictionary
         _discountsByYear = _discounts
             .OrderByDescending(x => x.GetYears())
             .ToDictionary(x=>x.GetYears(),x=>x);
-        foreach (var discount in _discounts)
-        {
-            _discountsByYear.Add(discount.GetYears(), discount);
-        }
+       
     }
 
     public ILoyaltyDiscount GetDiscountByYear(int year)
