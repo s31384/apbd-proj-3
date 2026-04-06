@@ -8,12 +8,16 @@ namespace LegacyRenewalApp
         ISubscriptionPlanRepository planRepository;
         IDataValidator dataValidator;
         ILoyaltyDiscountDictionary loyaltyDiscountDictionary;
+        ITeamDiscountDictionary teamDiscountDictionary;
+        ILoyaltyPoints loyaltyPointsService;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
             planRepository = new SubscriptionPlanRepository();
             dataValidator = new DataValidator();
             loyaltyDiscountDictionary =  new LoyaltyDiscountDictionary();
+            teamDiscountDictionary = new TeamDiscountDictionary();
+            loyaltyPointsService = new LoyaltyPointsService();
         }
         
 
@@ -44,26 +48,13 @@ namespace LegacyRenewalApp
             decimal discountAmount = customer.Segment.GetDiscountAmount(baseAmount, plan);
             string notes = customer.Segment.GetNotes("",plan);
             discountAmount += loyaltyDiscountDictionary.GetDiscountByYear(customer.YearsWithCompany).GetDiscountAmount(baseAmount);
-
-            if (seatCount >= 50)
-            {
-                discountAmount += baseAmount * 0.12m;
-                notes += "large team discount; ";
-            }
-            else if (seatCount >= 20)
-            {
-                discountAmount += baseAmount * 0.08m;
-                notes += "medium team discount; ";
-            }
-            else if (seatCount >= 10)
-            {
-                discountAmount += baseAmount * 0.04m;
-                notes += "small team discount; ";
-            }
+            notes += loyaltyDiscountDictionary.GetDiscountByYear(customer.YearsWithCompany).GetNotes(notes);
+            discountAmount += teamDiscountDictionary.GeDiscountBySeats(seatCount).GetDiscountAmount(baseAmount);
+            notes += teamDiscountDictionary.GeDiscountBySeats(seatCount).GetNotes(notes);
 
             if (useLoyaltyPoints && customer.LoyaltyPoints > 0)
             {
-                int pointsToUse = customer.LoyaltyPoints > 200 ? 200 : customer.LoyaltyPoints;
+                int pointsToUse = loyaltyPointsService.UseLoyaltyPoints(customer);
                 discountAmount += pointsToUse;
                 notes += $"loyalty points used: {pointsToUse}; ";
             }
