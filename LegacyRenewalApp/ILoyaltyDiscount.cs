@@ -2,8 +2,7 @@
 
 public interface ILoyaltyDiscount
 {
-    public decimal GetDiscountAmount(decimal baseAmount);
-    public string GetNotes(string notes);
+    public (decimal discount, string note)  GetDiscountAmount(decimal baseAmount);
     public int GetYears();
 }
 
@@ -15,15 +14,12 @@ public class LongTermDiscount : ILoyaltyDiscount
     {
         return years;
     }
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return baseAmount * 0.07m;
+        return (baseAmount * 0.07m, " long-term discount; ");
     }
 
-    public string GetNotes(string notes)
-    {
-        return notes += " long-term loyalty discount; ";
-    }
+   
     
     public int GetYears(){
         return years;
@@ -39,15 +35,12 @@ public class BasicLoyaltyDiscount : ILoyaltyDiscount
         return years;
     }
     
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return baseAmount * 0.03m;
+        return (baseAmount * 0.03m, " basic loyalty discount; ");
     }
 
-    public string GetNotes(string notes)
-    {
-        return notes += " basic loyalty discount; ";
-    }
+  
     public  int GetYears(){
         return years;
     }
@@ -57,14 +50,9 @@ public class BasicLoyaltyDiscount : ILoyaltyDiscount
 public class NoLoyaltyDiscount : ILoyaltyDiscount
 {
     private int years = 0;
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return 0;
-    }
-
-    public string GetNotes(string notes)
-    {
-        return notes;
+        return (0, "");
     }
 
     public int GetYears()

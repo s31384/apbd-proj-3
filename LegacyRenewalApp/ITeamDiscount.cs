@@ -2,22 +2,16 @@
 
 public interface ITeamDiscount
 {
-    public decimal GetDiscountAmount(decimal baseAmount);
-    public string GetNotes(string notes);
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount);
     public int GetSeats();
 }
 
 public class LargeTeamDiscount : ITeamDiscount
 {
     private int seats = 50;
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return baseAmount * 0.12m;
-    }
-
-    public string GetNotes(string notes)
-    {
-        return notes += " large team discount; ";
+        return (baseAmount * 0.12m, " large team discount; ");
     }
 
     public int GetSeats()
@@ -29,15 +23,9 @@ public class LargeTeamDiscount : ITeamDiscount
 public class MediumTeamDiscount : ITeamDiscount
 {
     int seats = 20;
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return baseAmount * 0.8m;
-        
-    }
-
-    public string GetNotes(string notes)
-    {
-        return    notes += " medium team discount; ";
+        return (baseAmount * 0.8m, " medium team discount; ");
         
     }
 
@@ -50,15 +38,9 @@ public class MediumTeamDiscount : ITeamDiscount
 public class SmallTeamDiscount : ITeamDiscount
 {
     int seats = 10;
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return baseAmount * 0.4m;
-        
-    }
-
-    public string GetNotes(string notes)
-    {
-        return    notes += " small team discount; ";
+        return (baseAmount * 0.4m, " small team discount; ");
         
     }
 
@@ -71,9 +53,9 @@ public class SmallTeamDiscount : ITeamDiscount
 public class NoTeamDiscount : ITeamDiscount
 {
     int seats = 0;
-    public decimal GetDiscountAmount(decimal baseAmount)
+    public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return 0;
+        return (0, "");
     }
 
     public string GetNotes(string notes)

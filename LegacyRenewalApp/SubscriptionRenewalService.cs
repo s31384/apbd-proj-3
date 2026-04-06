@@ -7,17 +7,15 @@ namespace LegacyRenewalApp
         ICustomerRepository customerRepository;
         ISubscriptionPlanRepository planRepository;
         IDataValidator dataValidator;
-        ILoyaltyDiscountDictionary loyaltyDiscountDictionary;
-        ITeamDiscountDictionary teamDiscountDictionary;
+       IDiscountService discountService;
         ILoyaltyPoints loyaltyPointsService;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
             planRepository = new SubscriptionPlanRepository();
             dataValidator = new DataValidator();
-            loyaltyDiscountDictionary =  new LoyaltyDiscountDictionary();
-            teamDiscountDictionary = new TeamDiscountDictionary();
             loyaltyPointsService = new LoyaltyPointsService();
+            discountService = new DiscountService(); 
         }
         
 
@@ -43,15 +41,12 @@ namespace LegacyRenewalApp
             {
                 throw new InvalidOperationException("Inactive customers cannot renew subscriptions");
             }
-
+            
             decimal baseAmount = (plan.MonthlyPricePerSeat * seatCount * 12m) + plan.SetupFee;
-            decimal discountAmount = customer.Segment.GetDiscountAmount(baseAmount, plan);
-            string notes = customer.Segment.GetNotes("",plan);
-            discountAmount += loyaltyDiscountDictionary.GetDiscountByYear(customer.YearsWithCompany).GetDiscountAmount(baseAmount);
-            notes += loyaltyDiscountDictionary.GetDiscountByYear(customer.YearsWithCompany).GetNotes(notes);
-            discountAmount += teamDiscountDictionary.GeDiscountBySeats(seatCount).GetDiscountAmount(baseAmount);
-            notes += teamDiscountDictionary.GeDiscountBySeats(seatCount).GetNotes(notes);
-
+            var discount = discountService.GetTotalDiscount(customer,plan,baseAmount, seatCount);
+            decimal discountAmount = discount.discount;
+            string notes = discount.notes;
+            
             if (useLoyaltyPoints && customer.LoyaltyPoints > 0)
             {
                 int pointsToUse = loyaltyPointsService.UseLoyaltyPoints(customer);
