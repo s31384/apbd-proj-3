@@ -12,6 +12,7 @@ namespace LegacyRenewalApp
         IMinimalTotalPolicy minimalTotalPolicy;
         IPaymentMethodDictionary paymentMethodDictionary;
         ICountryTaxDictionary countryTaxDictionary;
+        IMinimalInvoicePolicy minimalInvoicePolicy;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
@@ -22,6 +23,7 @@ namespace LegacyRenewalApp
             minimalTotalPolicy = new MinimalTotalPolicy();
             paymentMethodDictionary = new PaymentDictionary();
             countryTaxDictionary = new CountryTaxDictionary();
+            minimalInvoicePolicy = new MinimalInvoicePolicy();
         }
         
 
@@ -83,12 +85,10 @@ namespace LegacyRenewalApp
             decimal taxBase = subtotalAfterDiscount + supportFee + paymentFee;
             decimal taxAmount = taxBase * taxRate;
             decimal finalAmount = taxBase + taxAmount;
-
-            if (finalAmount < 500m)
-            {
-                finalAmount = 500m;
-                notes += "minimum invoice amount applied; ";
-            }
+            var minimalInvoicePolicyResult = minimalInvoicePolicy.ApplyMinimalInvoisePolicy(finalAmount);
+            finalAmount = minimalInvoicePolicyResult.finalAmount;
+            notes += minimalInvoicePolicyResult.note;
+            
 
             var invoice = new RenewalInvoice
             {
