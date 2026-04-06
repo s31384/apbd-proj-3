@@ -8,9 +8,9 @@ namespace LegacyRenewalApp
     {
         public static readonly Dictionary<string, SubscriptionPlan> Database = new Dictionary<string, SubscriptionPlan>
         {
-            { "START", new SubscriptionPlan { Code = "START", Name = "Start", MonthlyPricePerSeat = 49m, SetupFee = 120m, IsEducationEligible = false } },
-            { "PRO", new SubscriptionPlan { Code = "PRO", Name = "Professional", MonthlyPricePerSeat = 89m, SetupFee = 180m, IsEducationEligible = true } },
-            { "ENTERPRISE", new SubscriptionPlan { Code = "ENTERPRISE", Name = "Enterprise", MonthlyPricePerSeat = 149m, SetupFee = 300m, IsEducationEligible = false } }
+            { "START", new SubscriptionPlan { Code = "START", Name = "Start", MonthlyPricePerSeat = 49m, SetupFee = 120m, IsEducationEligible = false,  PremiumSupportPrice = 250m } },
+            { "PRO", new SubscriptionPlan { Code = "PRO", Name = "Professional", MonthlyPricePerSeat = 89m, SetupFee = 180m, IsEducationEligible = true ,  PremiumSupportPrice = 400m } },
+            { "ENTERPRISE", new SubscriptionPlan { Code = "ENTERPRISE", Name = "Enterprise", MonthlyPricePerSeat = 149m, SetupFee = 300m, IsEducationEligible = false,  PremiumSupportPrice = 700m } },
         };
 
         public SubscriptionPlan GetByCode(string code)

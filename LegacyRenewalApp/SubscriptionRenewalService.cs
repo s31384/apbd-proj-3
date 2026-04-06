@@ -10,6 +10,7 @@ namespace LegacyRenewalApp
        IDiscountService discountService;
         ILoyaltyPoints loyaltyPointsService;
         IMinimalTotalPolicy minimalTotalPolicy;
+        IPaymentMethodDictionary paymentMethodDictionary;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
@@ -18,6 +19,7 @@ namespace LegacyRenewalApp
             loyaltyPointsService = new LoyaltyPointsService();
             discountService = new DiscountService(new LoyaltyDiscountDictionary(),new TeamDiscountDictionary()); 
             minimalTotalPolicy = new MinimalTotalPolicy();
+            paymentMethodDictionary = new PaymentDictionary();
         }
         
 
@@ -64,47 +66,14 @@ namespace LegacyRenewalApp
             decimal supportFee = 0m;
             if (includePremiumSupport)
             {
-                if (normalizedPlanCode == "START")
-                {
-                    supportFee = 250m;
-                }
-                else if (normalizedPlanCode == "PRO")
-                {
-                    supportFee = 400m;
-                }
-                else if (normalizedPlanCode == "ENTERPRISE")
-                {
-                    supportFee = 700m;
-                }
+                supportFee = plan.PremiumSupportPrice;
 
                 notes += "premium support included; ";
             }
 
-            decimal paymentFee = 0m;
-            if (normalizedPaymentMethod == "CARD")
-            {
-                paymentFee = (subtotalAfterDiscount + supportFee) * 0.02m;
-                notes += "card payment fee; ";
-            }
-            else if (normalizedPaymentMethod == "BANK_TRANSFER")
-            {
-                paymentFee = (subtotalAfterDiscount + supportFee) * 0.01m;
-                notes += "bank transfer fee; ";
-            }
-            else if (normalizedPaymentMethod == "PAYPAL")
-            {
-                paymentFee = (subtotalAfterDiscount + supportFee) * 0.035m;
-                notes += "paypal fee; ";
-            }
-            else if (normalizedPaymentMethod == "INVOICE")
-            {
-                paymentFee = 0m;
-                notes += "invoice payment; ";
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported payment method");
-            }
+            var paymentResult = paymentMethodDictionary.getPaymentMethod(normalizedPaymentMethod).GetPaymentFee(subtotalAfterDiscount + supportFee);
+            decimal paymentFee = paymentResult.paymentFee;
+            notes += paymentResult.note;
 
             decimal taxRate = 0.20m;
             if (customer.Country == "Poland")
