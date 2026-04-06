@@ -1,4 +1,6 @@
-﻿namespace LegacyRenewalApp;
+﻿using System;
+
+namespace LegacyRenewalApp;
 
 public class DiscountService : IDiscountService
 {
@@ -20,9 +22,12 @@ public class DiscountService : IDiscountService
         var loyaltyDiscount =  loyaltyDiscountDictionary.GetDiscountByYear(customer.YearsWithCompany).GetDiscountAmount(baseAmount);
         discount += loyaltyDiscount.discount;
         notes += loyaltyDiscount.note;
+
         var teamDiscount = teamDiscountDictionary.GeDiscountBySeats(seatCount).GetDiscountAmount(baseAmount);
         discount += teamDiscount.discount;
         notes += teamDiscount.note;
+
         return (discount, notes);
+
     }
 }

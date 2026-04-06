@@ -25,7 +25,7 @@ public class MediumTeamDiscount : ITeamDiscount
     int seats = 20;
     public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return (baseAmount * 0.8m, " medium team discount; ");
+        return (baseAmount * 0.08m, " medium team discount; ");
         
     }
 
@@ -40,7 +40,7 @@ public class SmallTeamDiscount : ITeamDiscount
     int seats = 10;
     public (decimal discount, string note) GetDiscountAmount(decimal baseAmount)
     {
-        return (baseAmount * 0.4m, " small team discount; ");
+        return (baseAmount * 0.04m, " small team discount; ");
         
     }
 
