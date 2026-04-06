@@ -7,12 +7,13 @@ namespace LegacyRenewalApp
         ICustomerRepository customerRepository;
         ISubscriptionPlanRepository planRepository;
         IDataValidator dataValidator;
-       IDiscountService discountService;
+        IDiscountService discountService;
         ILoyaltyPoints loyaltyPointsService;
         IMinimalTotalPolicy minimalTotalPolicy;
         IPaymentMethodDictionary paymentMethodDictionary;
         ICountryTaxDictionary countryTaxDictionary;
         IMinimalInvoicePolicy minimalInvoicePolicy;
+        IBillingGatewayService billingGatewayService;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
@@ -24,6 +25,7 @@ namespace LegacyRenewalApp
             paymentMethodDictionary = new PaymentDictionary();
             countryTaxDictionary = new CountryTaxDictionary();
             minimalInvoicePolicy = new MinimalInvoicePolicy();
+            billingGatewayService = new BillingGateway();
         }
         
 
@@ -107,7 +109,7 @@ namespace LegacyRenewalApp
                 GeneratedAt = DateTime.UtcNow
             };
 
-            LegacyBillingGateway.SaveInvoice(invoice);
+            billingGatewayService.SaveInvoice(invoice);
 
             if (!string.IsNullOrWhiteSpace(customer.Email))
             {
@@ -116,7 +118,7 @@ namespace LegacyRenewalApp
                     $"Hello {customer.FullName}, your renewal for plan {normalizedPlanCode} " +
                     $"has been prepared. Final amount: {invoice.FinalAmount:F2}.";
 
-                LegacyBillingGateway.SendEmail(customer.Email, subject, body);
+                billingGatewayService.SendEmail(customer.Email, subject, body);
             }
 
             return invoice;
