@@ -11,6 +11,7 @@ namespace LegacyRenewalApp
         ILoyaltyPoints loyaltyPointsService;
         IMinimalTotalPolicy minimalTotalPolicy;
         IPaymentMethodDictionary paymentMethodDictionary;
+        ICountryTaxDictionary countryTaxDictionary;
         public SubscriptionRenewalService()
         {
             customerRepository = new CustomerRepository();
@@ -20,6 +21,7 @@ namespace LegacyRenewalApp
             discountService = new DiscountService(new LoyaltyDiscountDictionary(),new TeamDiscountDictionary()); 
             minimalTotalPolicy = new MinimalTotalPolicy();
             paymentMethodDictionary = new PaymentDictionary();
+            countryTaxDictionary = new CountryTaxDictionary();
         }
         
 
@@ -75,23 +77,8 @@ namespace LegacyRenewalApp
             decimal paymentFee = paymentResult.paymentFee;
             notes += paymentResult.note;
 
-            decimal taxRate = 0.20m;
-            if (customer.Country == "Poland")
-            {
-                taxRate = 0.23m;
-            }
-            else if (customer.Country == "Germany")
-            {
-                taxRate = 0.19m;
-            }
-            else if (customer.Country == "Czech Republic")
-            {
-                taxRate = 0.21m;
-            }
-            else if (customer.Country == "Norway")
-            {
-                taxRate = 0.25m;
-            }
+            decimal taxRate = countryTaxDictionary.getCountryTax(customer.Country).GetTax();
+            
 
             decimal taxBase = subtotalAfterDiscount + supportFee + paymentFee;
             decimal taxAmount = taxBase * taxRate;
