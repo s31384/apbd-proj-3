@@ -2,5 +2,5 @@
 
 public interface ILoyaltyPoints
 {
-    public int UseLoyaltyPoints(Customer customer);
+    public (int points, string note)  UseLoyaltyPoints(Customer customer);
 }

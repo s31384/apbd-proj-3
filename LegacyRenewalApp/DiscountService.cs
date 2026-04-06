@@ -7,10 +7,10 @@ public class DiscountService : IDiscountService
     ILoyaltyDiscountDictionary loyaltyDiscountDictionary;
     ITeamDiscountDictionary teamDiscountDictionary;
 
-    public DiscountService()
+    public DiscountService(ILoyaltyDiscountDictionary loyaltyDiscountDictionary,ITeamDiscountDictionary teamDiscountDictionary)
     {
-        loyaltyDiscountDictionary = new LoyaltyDiscountDictionary();
-        teamDiscountDictionary = new TeamDiscountDictionary();
+        this.loyaltyDiscountDictionary = loyaltyDiscountDictionary;
+        this.teamDiscountDictionary = teamDiscountDictionary;
     }
     public (decimal discount, string notes) GetTotalDiscount(Customer customer, SubscriptionPlan subscriptionPlan, decimal baseAmount, int seatCount)
     {

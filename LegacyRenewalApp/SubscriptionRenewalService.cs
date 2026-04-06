@@ -15,7 +15,7 @@ namespace LegacyRenewalApp
             planRepository = new SubscriptionPlanRepository();
             dataValidator = new DataValidator();
             loyaltyPointsService = new LoyaltyPointsService();
-            discountService = new DiscountService(); 
+            discountService = new DiscountService(new LoyaltyDiscountDictionary(),new TeamDiscountDictionary()); 
         }
         
 
@@ -47,11 +47,11 @@ namespace LegacyRenewalApp
             decimal discountAmount = discount.discount;
             string notes = discount.notes;
             
-            if (useLoyaltyPoints && customer.LoyaltyPoints > 0)
+            if (useLoyaltyPoints)
             {
-                int pointsToUse = loyaltyPointsService.UseLoyaltyPoints(customer);
-                discountAmount += pointsToUse;
-                notes += $"loyalty points used: {pointsToUse}; ";
+                var pointsToUse = loyaltyPointsService.UseLoyaltyPoints(customer);
+                discountAmount += pointsToUse.points;
+                notes += pointsToUse.note;
             }
 
             decimal subtotalAfterDiscount = baseAmount - discountAmount;
