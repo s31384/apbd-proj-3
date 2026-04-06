@@ -1,13 +1,13 @@
 ﻿namespace LegacyRenewalApp;
 
-public interface ISegmentDiscountStrategy
+public interface IDiscountStrategy
 {
     decimal GetDiscountAmount(decimal baseAmount, SubscriptionPlan subPlan);
     string GetNotes(string notes);
 }
 
 
-public class SilverSegment : ISegmentDiscountStrategy
+public class SilverSegment : IDiscountStrategy
 {
     public decimal GetDiscountAmount(decimal baseAmount,  SubscriptionPlan subPlan)
     {
@@ -19,7 +19,7 @@ public class SilverSegment : ISegmentDiscountStrategy
         return notes += " silver discount; ";
     }
 }
-public class GoldSegment : ISegmentDiscountStrategy
+public class GoldSegment : IDiscountStrategy
 {
     public decimal GetDiscountAmount(decimal baseAmount, SubscriptionPlan subPlan)
     {
@@ -31,7 +31,7 @@ public class GoldSegment : ISegmentDiscountStrategy
         return notes += " gold discount; ";
     }
 }
-public class PlatinumSegment : ISegmentDiscountStrategy
+public class PlatinumSegment : IDiscountStrategy
 {
     public decimal GetDiscountAmount(decimal baseAmount, SubscriptionPlan subPlan)
     {
@@ -44,11 +44,15 @@ public class PlatinumSegment : ISegmentDiscountStrategy
         return notes += " platinum discount; ";
     }
 }
-public class EducationSegment : ISegmentDiscountStrategy
+public class EducationSegment : IDiscountStrategy
 {
     public decimal GetDiscountAmount(decimal baseAmount, SubscriptionPlan subPlan)
     {
-        return baseAmount * 0.2m;
+        if (subPlan.IsEducationEligible)
+        {
+            return baseAmount * 0.2m;
+        }
+        else return 0m;
     }
 
     public string GetNotes(string notes)
